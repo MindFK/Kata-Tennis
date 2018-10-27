@@ -7,7 +7,7 @@ import org.kata.entities.GameScore;
 import org.kata.entities.Player;
 import org.kata.enums.GameState;
 import org.kata.services.score.GameScoreByPlayerIndex;
-import org.kata.services.score.GameScoreStarter;
+import org.kata.services.score.GameScoreService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ public class GameService {
     private AutoGame pointWinner;
     private AutoGame setWinner;
 
-    private GameScoreStarter gameScoreExecutor;
+    private GameScoreService gameScoreExecutor;
     private Map<Player, AutoGame> playersMap;//keep the order the same with the Game sg.kata.model
 
     private GameState pointState = GameState.DEFAULT;
@@ -39,6 +39,7 @@ public class GameService {
     }
 
     public void startAPoint() {
+        checkSetIsStarted();
         pointState = GameState.STARTED;
         getPlayers().forEach(a -> a.setLostThePoint(false));
         this.pointWinner = null;
@@ -87,7 +88,7 @@ public class GameService {
 
     public GameService(Game game) {
         this.model = game;
-        this.gameScoreExecutor = new GameScoreStarter(game.getGameScore());
+        this.gameScoreExecutor = new GameScoreService(game.getGameScore());
     }
 
     private Map<Player, AutoGame> getPlayersMap() {
