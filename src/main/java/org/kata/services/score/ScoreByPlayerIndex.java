@@ -1,4 +1,4 @@
-package org.kata.score;
+package org.kata.services.score;
 
 import org.kata.entities.Player;
 import org.kata.entities.Score;

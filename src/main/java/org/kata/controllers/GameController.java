@@ -1,4 +1,4 @@
-package org.kata.play;
+package org.kata.controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,18 +6,18 @@ import org.kata.entities.Game;
 import org.kata.entities.GameScore;
 import org.kata.entities.Player;
 import org.kata.entities.Score;
-import org.kata.score.GameScoreByPlayerIndex;
-import org.kata.game.GameService;
+import org.kata.services.score.GameScoreByPlayerIndex;
+import org.kata.services.game.GameService;
 
 /**
  * Created by Walid GHARIANI on 10/27/2018-3:16 AM.
  */
-public class Acts {
+public abstract class GameController {
     final static Logger log = LogManager.getLogger(GameService.class);
 
     protected GameService game;
 
-    public void initPlayersAndScores(){
+    public void initPlayersAndScores() {
         log.debug("Init Players and scores");
         game.getModel().setPlayer1(null);
         game.getModel().setPlayer2(null);
@@ -26,64 +26,64 @@ public class Acts {
         game.getModel().getGameScore().setDeucePlayer1(false);
         game.getModel().getGameScore().setDeucePlayer2(false);
     }
-    public void joinTheGame(Player player){
-        if(game.getModel().getPlayer1()==null) {
+
+    public void joinTheGame(Player player) {
+        if (game.getModel().getPlayer1() == null) {
             game.getModel().setPlayer1(player);
-            log.debug(player+" has join the game as player1");
-        }else
-        if(game.getModel().getPlayer2()==null) {
+            log.debug(player + " has join the game as player1");
+        } else if (game.getModel().getPlayer2() == null) {
             game.getModel().setPlayer2(player);
-            log.debug(player+" has join the game as player2");
-        }else
+            log.debug(player + " has join the game as player2");
+        } else
             throw new RuntimeException("Game is full, no empty place avalaible");
     }
 
-    public void startThePoint(){
+    public void startThePoint() {
         game.startAPoint();
     }
 
-    public void startTheSet(){
+    public void startTheSet() {
         game.startASet();
     }
 
-    public Player getSetWinner(){
+    public Player getSetWinner() {
         return game.getSetWinner();
     }
 
 
-    public Player getSetLooser(){
+    public Player getSetLooser() {
         int winnerIndex = game.getPlayerIndex(getSetWinner());
         int looserIndex = 1 - winnerIndex;
         return game.getPlayers().get(looserIndex);
     }
 
-    public int getSetWinnerScore(){
+    public int getSetWinnerScore() {
         int winnerIndex = game.getPlayerIndex(getSetWinner());
         return game.getGameScoreByIndex().getScore(winnerIndex);
     }
 
-    public int getSetLooserScore(){
+    public int getSetLooserScore() {
         int winnerIndex = game.getPlayerIndex(getSetLooser());
         return game.getGameScoreByIndex().getScore(winnerIndex);
     }
 
-    public Player getPointWinner(){
+    public Player getPointWinner() {
         return game.getPointWinner();
     }
 
-    public Game getGameModel(){
+    public Game getGameModel() {
         return game.getModel();
     }
 
-    public Score getSetScore(){
+    public Score getSetScore() {
         return game.getGameScore();
     }
 
-    public GameScore getGameScore(){
+    public GameScore getGameScore() {
         return game.getGameScore();
     }
 
-    public GameScoreByPlayerIndex getGameScoreByIndex(){
+    public GameScoreByPlayerIndex getGameScoreByIndex() {
         return game.getGameScoreByIndex();
     }
 }
