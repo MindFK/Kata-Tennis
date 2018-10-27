@@ -8,7 +8,7 @@
 ## Requirements :
 JDK 8
 Maven 3
-Text editor or IDE
+Text editor or IDE  
 ## How it Works :
 run the commands below:  
  `mvn clean compile` : For compile the project and run defined JUNIT tests.  
