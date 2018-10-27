@@ -11,11 +11,11 @@ import java.util.List;
 /**
  * Created by Walid GHARIANI on 10/26/2018-11:56 PM.
  */
-public class GameScoreStarter extends ScoreService {
-    final static Logger log = LogManager.getLogger(GameScoreStarter.class);
+public class GameScoreService extends ScoreService {
+    final static Logger log = LogManager.getLogger(GameScoreService.class);
     protected GameScoreByPlayerIndex scoreByPlayerIndex;
 
-    public GameScoreStarter(GameScore score) {
+    public GameScoreService(GameScore score) {
         super(score);
         this.scoreByPlayerIndex = new GameScoreByPlayerIndex(score);
     }
@@ -38,14 +38,29 @@ public class GameScoreStarter extends ScoreService {
 
     @Override
     public void applyRules(int playerIndex) {
-        int indexOfOtherPlayer = 1 - playerIndex;
+        int indexOfOtherPlayer = 1-playerIndex;
         int currentScore = scoreByPlayerIndex.getScore(playerIndex);
         int newScore = nextScore(currentScore);
-        if (currentScore == 40) {
-            setWinner(true);
+        if (currentScore==40) {
+            if (scoreByPlayerIndex.getScore(indexOfOtherPlayer)!=40){
+                setWinner(true);
+            }
+            else if (scoreByPlayerIndex.isDeuce(playerIndex)) {
+                setWinner(true);
+            }
+        }
+        if (currentScore == newScore) {
+            if (!scoreByPlayerIndex.isDeuce(indexOfOtherPlayer)) {
+                scoreByPlayerIndex.setDeuce(playerIndex, true);
+                scoreByPlayerIndex.setDeuce(indexOfOtherPlayer, false);
+                log.debug("Deuce Case " + scoreByPlayerIndex.getPlayer(playerIndex).getName() + " take the adventage");
+            }else{
+                scoreByPlayerIndex.setDeuce(indexOfOtherPlayer, false);
+                log.debug("Deuce Case " + scoreByPlayerIndex.getPlayer(indexOfOtherPlayer).getName() + " loose the adventage");
+            }
         }
         scoreByPlayerIndex.setScore(playerIndex, newScore);
-        log.debug("New Game Score : " + scoreByPlayerIndex.getScore());
+        log.debug("New Game Score : "+scoreByPlayerIndex.getScore());
     }
 
     @Override
