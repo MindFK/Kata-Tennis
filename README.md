@@ -1,15 +1,3 @@
-## Java Kata Tennis
-> This program takes into account the elements for the scoreboard between two tennis players.
-  REQUIREMENTS:
-  Players are able to score points.
-  The set is finished with a winner.
-  The game is won, the winning player is determined as the score of each player at any time during the game.
-
-## Requirements :
-JDK 8
-Maven 3
-Text editor or IDE
-## How it Works :
-run the commands below:  
- `mvn clean compile` : For compile the project and run defined JUNIT tests.  
- `mvn clean install` : For build and packaging as jar.
+You found as below the link of the github reposories for the kata :
+Every Story has her own branch
+I used parallel git branching and every branch will be merged to dev branch and after the sprint finished the dev branch will be released and the pom version changed to release. 

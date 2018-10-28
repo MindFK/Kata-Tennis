@@ -10,9 +10,11 @@ public class Game {
     private Player player2;
     private Date date = new Date();
     private GameScore gameScore = new GameScore();
+    private SetScore setScore = new SetScore();
 
     public Game() {
         gameScore.setGame(this);
+        setScore.setGame(this);
     }
 
     public Date getDate() {
@@ -25,6 +27,14 @@ public class Game {
 
     public GameScore getGameScore() {
         return gameScore;
+    }
+
+    public SetScore getSetScore() {
+        return setScore;
+    }
+
+    public void setSetScore(SetScore setScore) {
+        this.setScore = setScore;
     }
 
     public void setGameScore(GameScore gameScore) {
