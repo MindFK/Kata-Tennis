@@ -1,6 +1,6 @@
 ## Java Kata Tennis
 > This program takes into account the elements for the scoreboard between two tennis players.  
-  REQUIREMENTS:
+  GAME REQUIREMENTS:  
   Players are able to score points.
   The set is finished with a winner.
   The game is won, the winning player is determined as the score of each player at any time during the game.
