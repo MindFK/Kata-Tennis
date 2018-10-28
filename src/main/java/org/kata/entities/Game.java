@@ -68,7 +68,6 @@ public class Game {
     @Override
     public String toString() {
         return "Game{" +
-                //    "date=" + date +
                 ", player1=" + player1 +
                 ", player2=" + player2 +
                 ", setSetScore=" + gameScore +
