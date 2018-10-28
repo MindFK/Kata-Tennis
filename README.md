@@ -6,7 +6,7 @@
   The game is won, the winning player is determined as the score of each player at any time during the game.
 ## Requirements :
 JDK 8  
-Maven 3
+Maven 3  
 Text editor or IDE  
 ## How it Works :
 run the commands below:  
