@@ -58,7 +58,7 @@ public class GameTests {
     }
 
     @Test
-    public void testSetWinner() {// we need 6 points
+    public void testSetWinner() {
         gameConsole.startTheMatch();
         playAGame(default_winner_player_index, false, 1, 0);
         playAGame(default_winner_player_index, false, 2, 0);
@@ -176,7 +176,7 @@ public class GameTests {
         playAGame(default_winner_player_index, false, 4, 5);
         playAGame(default_winner_player_index, false, 5, 5);
         playAGame(default_winner_player_index, false, 6, 5);
-        Assert.assertEquals(gameConsole.getMatchWinner(), null);// no winner
+        Assert.assertEquals(gameConsole.getMatchWinner(), null);
         Assert.assertEquals(setScoreByPlayerIndex.getScore(looserIndex), 5);
         Assert.assertEquals(setScoreByPlayerIndex.getScore(default_winner_player_index), 6);
         playAGame(default_winner_player_index, false, 7, 5);

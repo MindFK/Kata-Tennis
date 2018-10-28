@@ -6,7 +6,7 @@ import org.kata.services.game.HumanGame;
 /**
  * Created by Walid GHARIANI on 10/27/2018-7:36 PM.
  * <p>
- * Mainly, this class is used to define specific services for unit tests.
+ * Mainly, this class is used to define specific services tests.
  */
 public class HumanGameController extends GameController {
     public HumanGameController(Game game) {

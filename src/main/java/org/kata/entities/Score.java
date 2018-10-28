@@ -38,10 +38,9 @@ public abstract class Score {
 
     @Override
     public String toString() {
-        return "Score{" +
-                "scoreForPlayer1=" + scorePlayer1 +
-                ", scoreForPlayer2=" + scorePlayer2 +
-                ", game=" + game +
+        return "SetScore{" +
+                "Player1(" + getGame().getPlayer1().getName() + ")={score=" + getScorePlayer1() + "}," +
+                "Player2(" + getGame().getPlayer2().getName() + ")={score=" + getScorePlayer2() + "}" +
                 '}';
     }
 }
