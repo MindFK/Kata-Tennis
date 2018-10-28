@@ -27,7 +27,7 @@ public class GameService {
     private AutoPlayer setWinner;
     private AutoPlayer matchWinner;
 
-    private GameScoreService gameScoreExecutor;
+    private GameScoreService gameScoreService;
     private Map<Player, AutoPlayer> playersMap;
     private SetScoreService setScoreService;
 
@@ -38,7 +38,7 @@ public class GameService {
 
 
     public GameScore getGameScore() {
-        return (GameScore) gameScoreExecutor.getScore();
+        return (GameScore) gameScoreService.getScore();
     }
 
     public Score getSetScore() {
@@ -46,7 +46,7 @@ public class GameService {
     }
 
     public GameScoreByPlayerIndex getGameScoreByIndex() {
-        return gameScoreExecutor.getScoreByPlayerIndex();
+        return gameScoreService.getScoreByPlayerIndex();
     }
 
     public SetScoreByPlayerIndex getSetScoreByIndex() {
@@ -58,24 +58,25 @@ public class GameService {
         pointState = GameState.STARTED;
         getPlayers().forEach(a -> a.setLostThePoint(false));
         this.pointWinner = null;
-        log.debug("New Point started");
     }
 
     public void startASet() {
         checkMatchIsReady();
+        if (!setState.equals(GameState.STARTED))
+            log.debug("New Set started");
         setState = GameState.STARTED;
-        gameScoreExecutor.initTheScore();
+        gameScoreService.initTheScore();
         this.setWinner = null;
-        log.debug("New set started");
         startAPoint();
     }
 
     public void startAMatch() {
         checkMatchIsReady();
+        if (!matchState.equals(GameState.STARTED))
+            log.debug("New Match started");
         setScoreService.initTheScore();
         matchState = GameState.STARTED;
         matchWinner = null;
-        log.debug(model + " started");
         startASet();
     }
 
@@ -91,17 +92,17 @@ public class GameService {
 
     public void terminateMatch() {
         matchState = GameState.ENDED;
-        terminateSet();
+        log.debug("Match ended");
     }
 
     public void terminateSet() {
         setState = GameState.ENDED;
-        terminateGame();
+        log.debug("Set ended");
+
     }
 
     public void terminateGame() {
         gameState = GameState.ENDED;
-        terminatePoint();
     }
 
     public void terminatePoint() {
@@ -133,7 +134,7 @@ public class GameService {
 
     public GameService(Game game) {
         this.model = game;
-        this.gameScoreExecutor = new GameScoreService(game.getGameScore());
+        this.gameScoreService = new GameScoreService(game.getGameScore());
         this.setScoreService = new SetScoreService(game.getSetScore());
     }
 
@@ -165,12 +166,12 @@ public class GameService {
     public void applyGameScoreRules(Player pr) {
         AutoPlayer player = getPlayersMap().get(pr);
         int index = getPlayers().indexOf(player);
-        gameScoreExecutor.applyRules(index);
-        if (gameScoreExecutor.getWinner()) {
+        gameScoreService.applyRules(index);
+        if (gameScoreService.getWinner()) {
             setWinner = player;
             log.debug(player + " win the set");
-            applySetScoreRules(player);
             terminateSet();
+            applySetScoreRules(player);
         }
     }
 
@@ -181,8 +182,10 @@ public class GameService {
         if (setScoreService.getWinner()) {
             matchWinner = player;
             log.debug(player + " win the match");
+            terminateMatch();
         }
     }
+
 
     protected void setPointWinner(AutoPlayer pointWinner) {
         this.pointWinner = pointWinner;
@@ -209,13 +212,6 @@ public class GameService {
     public String toString() {
         return "GameService{" +
                 "model=" + model +
-                ", pointWinner=" + pointWinner +
-                ", setWinner=" + setWinner +
-                ", gameScoreExecutor=" + gameScoreExecutor +
-                ", playersMap=" + playersMap +
-                ", pointState=" + pointState +
-                ", gameState=" + gameState +
-                ", setState=" + setState +
                 '}';
     }
 }
