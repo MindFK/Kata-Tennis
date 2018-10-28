@@ -1,51 +1,55 @@
 package org.kata.services.game;
 
-import org.kata.entities.Player;
+import org.kata.entities.Game;
 
+import java.util.List;
 import java.util.Random;
 
 /**
- * Created by Walid GHARIANI on 10/26/2018-11:28 PM.
+ * Created by Walid GHARIANI on 10/27/2018-12:56 AM.
  */
-public class AutoGame extends Player {
-    private static Random random = new Random();
-    private static int PossibleBallPosition = 7;
-    private boolean lostThePoint = false;
+public class AutoGame extends GameService {
 
-    public static AutoGame wrap(Player player) {
-        AutoGame AutoPlayerService = new AutoGame();
-        AutoPlayerService.setName(player.getName());
-        return AutoPlayerService;
+    public AutoGame(Game game) {
+        super(game);
     }
 
-    public boolean hasLostThePoint() {
-        return lostThePoint;
+    private AutoPlayer findThePointWinner() {
+        List<AutoPlayer> players = getPlayers();
+        for (AutoPlayer AutoPlayerService : players)
+            if (AutoPlayerService.hasLostThePoint())
+                return getPlayers().stream().filter(p -> !p.hasLostThePoint()).findAny().orElse(null);
+        return null;
     }
 
-    public void setLostThePoint(boolean lostThePoint) {
-        this.lostThePoint = lostThePoint;
+    private void playAPoint() {
+        int ballPosition = getPlayers().get(new Random().nextInt(1)).sendTheService();
+        AutoPlayer pointWinner = findThePointWinner();
+        int index = 1;
+        while (pointWinner == null) {
+            ballPosition = getPlayers().get(index).sendBack(ballPosition);
+            pointWinner = findThePointWinner();
+            index = 1 - index;
+        }
+        setPointWinner(pointWinner);
+
     }
 
-    public int sendTheService() {
-        int shoot = random.nextInt(PossibleBallPosition);
-        checkTheShoot(shoot);
-        return shoot;
+    public void playASet() {
+        startASet();
+        while (getSetWinner() == null) {
+            playAPoint();
+            applyGameScoreRules(getPointWinner());
+            if (getSetWinner() == null)
+                startAPoint();
+        }
     }
 
-    public void checkTheShoot(int shoot) {
-        if (!isAValidShoot(shoot))
-            this.lostThePoint = true;
-    }
-
-    public static boolean isAValidShoot(int shoot) {
-        return shoot >= 1 && shoot <= 5;
-    }
-
-    public int sendBack(int position) {
-        int playerPosition = random.nextInt(PossibleBallPosition);
-        if (playerPosition - position <= random.nextInt(2) + 2)
-            return sendTheService();
-        this.lostThePoint = true;
-        return -1;
+    public void playAMatch() {
+        startAMatch();
+        while (getMatchWinner() == null) {
+            playASet();
+        }
     }
 }
+

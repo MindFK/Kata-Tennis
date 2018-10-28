@@ -2,12 +2,10 @@ package org.kata.controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kata.entities.Game;
-import org.kata.entities.GameScore;
-import org.kata.entities.Player;
-import org.kata.entities.Score;
+import org.kata.entities.*;
 import org.kata.services.score.GameScoreByPlayerIndex;
 import org.kata.services.game.GameService;
+import org.kata.services.score.SetScoreByPlayerIndex;
 
 /**
  * Created by Walid GHARIANI on 10/27/2018-3:16 AM.
@@ -46,6 +44,10 @@ public abstract class GameController {
         game.startASet();
     }
 
+    public void startTheMatch() {
+        game.startAMatch();
+    }
+
     public Player getSetWinner() {
         return game.getSetWinner();
     }
@@ -75,8 +77,8 @@ public abstract class GameController {
         return game.getModel();
     }
 
-    public Score getSetScore() {
-        return game.getGameScore();
+    public SetScore getSetScore() {
+        return (SetScore) game.getSetScore();
     }
 
     public GameScore getGameScore() {
@@ -85,5 +87,29 @@ public abstract class GameController {
 
     public GameScoreByPlayerIndex getGameScoreByIndex() {
         return game.getGameScoreByIndex();
+    }
+
+    public SetScoreByPlayerIndex getSetSocreByIndex() {
+        return game.getSetScoreByIndex();
+    }
+
+    public int getMatchWinnerScore() {
+        int winnerIndex = game.getPlayerIndex(getMatchWinner());
+        return game.getSetScoreByIndex().getScore(winnerIndex);
+    }
+
+    public int getMatchLooserScore() {
+        int winnerIndex = game.getPlayerIndex(getMatchLooser());
+        return game.getSetScoreByIndex().getScore(winnerIndex);
+    }
+
+    public Player getMatchWinner() {
+        return game.getMatchWinner();
+    }
+
+    public Player getMatchLooser() {
+        int winnerIndex = game.getPlayerIndex(getMatchWinner());
+        int looserIndex = 1 - winnerIndex;
+        return game.getPlayers().get(looserIndex);
     }
 }

@@ -1,6 +1,7 @@
 package org.kata.controllers;
 
 import org.kata.entities.Game;
+import org.kata.services.game.AutoGame;
 import org.kata.services.game.AutoPlayer;
 
 /**
@@ -12,17 +13,22 @@ import org.kata.services.game.AutoPlayer;
 public class AutoGameController extends GameController {
 
     public AutoGameController(Game game) {
-        this.game = new AutoPlayer(game);
+        this.game = new AutoGame(game);
     }
 
 
     // Waiting for player to join the game
     public AutoGameController() {
-        this.game = new AutoPlayer(new Game());
+        this.game = new AutoGame(new Game());
     }
 
     public void playASet() {
         game.checkSetIsStarted();
-        ((AutoPlayer) game).playASet();
+        ((AutoGame) game).playASet();
+    }
+
+    public void playAMatch() {
+        game.checkMatchIsStarted();
+        ((AutoGame) game).playAMatch();
     }
 }

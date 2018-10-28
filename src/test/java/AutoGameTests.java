@@ -12,13 +12,25 @@ public class AutoGameTests {
 
     @Test
     public void testWinnerScore() {
-        AutoGameController gameConsole = new AutoGameController();
-        gameConsole.joinTheGame(p1);
-        gameConsole.joinTheGame(p2);
-        gameConsole.startTheSet();
-        gameConsole.playASet();
-        Assert.assertNotNull(gameConsole.getSetWinner());
-        Assert.assertEquals(gameConsole.getSetWinnerScore(), 40);
+        AutoGameController gameController = new AutoGameController();
+        gameController.joinTheGame(p1);
+        gameController.joinTheGame(p2);
+        gameController.startTheSet();
+        gameController.playASet();
+        Assert.assertNotNull(gameController.getSetWinner());
+        Assert.assertEquals(gameController.getSetWinnerScore(), 40);
+    }
+
+    @Test
+    public void testAutoPlayAMatch() {
+        AutoGameController gameController = new AutoGameController();
+        gameController.joinTheGame(p1);
+        gameController.joinTheGame(p2);
+        gameController.startTheMatch();
+        gameController.playAMatch();
+        Assert.assertNotNull(gameController.getMatchWinner());
+        Assert.assertTrue(gameController.getMatchWinnerScore() - gameController.getMatchLooserScore() >= 2);
+        Assert.assertTrue(gameController.getMatchWinnerScore() >= 6);
     }
 
 }
