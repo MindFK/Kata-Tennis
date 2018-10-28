@@ -3,7 +3,7 @@ package org.kata.entities;
 /**
  * Created by Walid GHARIANI on 10/26/2018-10:42 PM.
  */
-public class Score {
+public abstract class Score {
     private int scorePlayer1;
     private int scorePlayer2;
     private Game game;

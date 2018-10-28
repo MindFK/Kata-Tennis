@@ -11,7 +11,7 @@ public class MainGame {
         AutoGameController gameController = new AutoGameController();
         gameController.joinTheGame(new Player("Player1"));
         gameController.joinTheGame(new Player("Player2"));
-        gameController.startTheSet();
-        gameController.playASet();
+        gameController.startTheMatch();
+        gameController.playAMatch();
     }
 }

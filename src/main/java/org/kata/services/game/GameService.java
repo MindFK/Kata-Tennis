@@ -5,9 +5,12 @@ import org.apache.logging.log4j.Logger;
 import org.kata.entities.Game;
 import org.kata.entities.GameScore;
 import org.kata.entities.Player;
+import org.kata.entities.Score;
 import org.kata.enums.GameState;
 import org.kata.services.score.GameScoreByPlayerIndex;
 import org.kata.services.score.GameScoreService;
+import org.kata.services.score.SetScoreByPlayerIndex;
+import org.kata.services.score.SetScoreService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,26 +23,38 @@ import java.util.Map;
 public class GameService {
     final static Logger log = LogManager.getLogger(GameService.class);
     private Game model;
-    private AutoGame pointWinner;
-    private AutoGame setWinner;
+    private AutoPlayer pointWinner;
+    private AutoPlayer setWinner;
+    private AutoPlayer matchWinner;
 
     private GameScoreService gameScoreExecutor;
-    private Map<Player, AutoGame> playersMap;//keep the order the same with the Game sg.kata.model
+    private Map<Player, AutoPlayer> playersMap;
+    private SetScoreService setScoreService;
 
     private GameState pointState = GameState.DEFAULT;
     private GameState gameState = GameState.DEFAULT;
     private GameState setState = GameState.DEFAULT;
+    private GameState matchState = GameState.DEFAULT;
+
 
     public GameScore getGameScore() {
         return (GameScore) gameScoreExecutor.getScore();
+    }
+
+    public Score getSetScore() {
+        return setScoreService.getScore();
     }
 
     public GameScoreByPlayerIndex getGameScoreByIndex() {
         return gameScoreExecutor.getScoreByPlayerIndex();
     }
 
+    public SetScoreByPlayerIndex getSetScoreByIndex() {
+        return setScoreService.getScoreByPlayerIndex();
+    }
+
     public void startAPoint() {
-        checkSetIsStarted();
+        checkMatchIsReady();
         pointState = GameState.STARTED;
         getPlayers().forEach(a -> a.setLostThePoint(false));
         this.pointWinner = null;
@@ -47,6 +62,7 @@ public class GameService {
     }
 
     public void startASet() {
+        checkMatchIsReady();
         setState = GameState.STARTED;
         gameScoreExecutor.initTheScore();
         this.setWinner = null;
@@ -54,11 +70,29 @@ public class GameService {
         startAPoint();
     }
 
+    public void startAMatch() {
+        checkMatchIsReady();
+        setScoreService.initTheScore();
+        matchState = GameState.STARTED;
+        matchWinner = null;
+        log.debug(model + " started");
+        startASet();
+    }
+
     public void checkSetIsStarted() {
         if (!GameState.STARTED.equals(setState))
             throw new RuntimeException("Set is not started");
     }
 
+    public void checkMatchIsStarted() {
+        if (!GameState.STARTED.equals(matchState))
+            throw new RuntimeException("Match is not started or already terminated");
+    }
+
+    public void terminateMatch() {
+        matchState = GameState.ENDED;
+        terminateSet();
+    }
 
     public void terminateSet() {
         setState = GameState.ENDED;
@@ -78,6 +112,10 @@ public class GameService {
         return GameState.STARTED.equals(setState);
     }
 
+    public boolean isMatchStarted() {
+        return GameState.STARTED.equals(matchState);
+    }
+
     public boolean isGameStarted() {
         return GameState.STARTED.equals(gameState);
     }
@@ -86,18 +124,30 @@ public class GameService {
         return GameState.STARTED.equals(pointState);
     }
 
+    protected void checkMatchIsReady() {
+        if (model.getPlayer1() == null || model.getPlayer2() == null) {
+            matchState = GameState.DEFAULT;
+            throw new RuntimeException("Game is not ready");
+        }
+    }
+
     public GameService(Game game) {
         this.model = game;
         this.gameScoreExecutor = new GameScoreService(game.getGameScore());
+        this.setScoreService = new SetScoreService(game.getSetScore());
     }
 
-    private Map<Player, AutoGame> getPlayersMap() {
+    private Map<Player, AutoPlayer> getPlayersMap() {
         if (playersMap == null) {
             playersMap = new HashMap<>();
-            this.playersMap.put(model.getPlayer1(), AutoGame.wrap(model.getPlayer1()));
-            this.playersMap.put(model.getPlayer2(), AutoGame.wrap(model.getPlayer2()));
+            this.playersMap.put(model.getPlayer1(), AutoPlayer.wrap(model.getPlayer1()));
+            this.playersMap.put(model.getPlayer2(), AutoPlayer.wrap(model.getPlayer2()));
         }
         return this.playersMap;
+    }
+
+    public AutoPlayer getMatchWinner() {
+        return matchWinner;
     }
 
     public Game getModel() {
@@ -113,17 +163,28 @@ public class GameService {
     }
 
     public void applyGameScoreRules(Player pr) {
-        AutoGame player = getPlayersMap().get(pr);
+        AutoPlayer player = getPlayersMap().get(pr);
         int index = getPlayers().indexOf(player);
         gameScoreExecutor.applyRules(index);
         if (gameScoreExecutor.getWinner()) {
             setWinner = player;
             log.debug(player + " win the set");
+            applySetScoreRules(player);
             terminateSet();
         }
     }
 
-    protected void setPointWinner(AutoGame pointWinner) {
+    public void applySetScoreRules(Player pr) {
+        AutoPlayer player = getPlayersMap().get(pr);
+        int index = getPlayers().indexOf(player);
+        setScoreService.applyRules(index);
+        if (setScoreService.getWinner()) {
+            matchWinner = player;
+            log.debug(player + " win the match");
+        }
+    }
+
+    protected void setPointWinner(AutoPlayer pointWinner) {
         this.pointWinner = pointWinner;
     }
 
@@ -136,9 +197,9 @@ public class GameService {
             throw new RuntimeException("Player not founds");
     }
 
-    public List<AutoGame> getPlayers() {
-        List<AutoGame> players = new ArrayList<>();
-        Map<Player, AutoGame> playersMap = getPlayersMap();
+    public List<AutoPlayer> getPlayers() {
+        List<AutoPlayer> players = new ArrayList<>();
+        Map<Player, AutoPlayer> playersMap = getPlayersMap();
         players.add(playersMap.get(model.getPlayer1()));
         players.add(playersMap.get(model.getPlayer2()));
         return players;
