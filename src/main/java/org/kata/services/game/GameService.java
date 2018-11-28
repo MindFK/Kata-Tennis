@@ -24,7 +24,7 @@ public class GameService {
     private AutoGame setWinner;
 
     private GameScoreStarter gameScoreExecutor;
-    private Map<Player, AutoGame> playersMap;//keep the order the same with the Game sg.kata.model
+    private Map<Player, AutoGame> playersMap;//keep the order the same with the Game
 
     private GameState pointState = GameState.DEFAULT;
     private GameState gameState = GameState.DEFAULT;
